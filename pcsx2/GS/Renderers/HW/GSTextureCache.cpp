@@ -4250,7 +4250,7 @@ void GSTextureCache::IncAge()
 	// Sigh, this seems to be used to invalidate surfaces. So set a huge maxage to avoid flicker,
 	// but still invalidate surfaces. (Disgaea 2 fmv when booting the game through the BIOS)
 	// Original maxage was 4 here, Xenosaga 2 needs at least 240, else it flickers on scene transitions.
-	static constexpr int max_rt_age = 400; // ffx intro scene changes leave the old image untouched for a couple of frames and only then start using it
+	static constexpr int max_rt_age = 60; // ffx intro scene changes leave the old image untouched for a couple of frames and only then start using it
 
 	// Toss and recompute sizes after 2 seconds of not being used. Should be sufficient for most loading screens.
 	static constexpr int max_size_age = 120;
