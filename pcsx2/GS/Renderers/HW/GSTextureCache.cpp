@@ -4054,6 +4054,23 @@ GSTextureCache::Target* GSTextureCache::GetTargetWithSharedBits(u32 BP, u32 PSM)
 	return nullptr;
 }
 
+GSTextureCache::Target* GSTextureCache::FindOverlappingTarget(GSTextureCache::Target* target) const
+{
+	for (int i = 0; i < 2; i++)
+	{
+		for (Target* tgt : m_dst[i])
+		{
+			if (tgt == target)
+				continue;
+
+			if (CheckOverlap(tgt->m_TEX0.TBP0, tgt->m_end_block, target->m_TEX0.TBP0, target->m_end_block))
+				return tgt;
+		}
+	}
+
+	return nullptr;
+}
+
 GSTextureCache::Target* GSTextureCache::FindOverlappingTarget(u32 BP, u32 end_bp) const
 {
 	for (int i = 0; i < 2; i++)
@@ -4247,11 +4264,22 @@ void GSTextureCache::IncAge()
 
 			if (++t->m_age > max_rt_age)
 			{
-				i = list.erase(i);
-				GL_CACHE("TC: Remove Target(%s): (0x%x) due to age", to_string(type),
-					t->m_TEX0.TBP0);
+				const Target* overlapping_tgt = FindOverlappingTarget(t);
 
-				delete t;
+				if (!t->m_dirty.empty() || overlapping_tgt != nullptr)
+				{
+					i = list.erase(i);
+					GL_CACHE("TC: Remove Target(%s): (0x%x) due to age", to_string(type),
+						t->m_TEX0.TBP0);
+
+					delete t;
+				}
+				else
+				{
+					DevCon.Warning("Extending life of target for %x", t->m_TEX0.TBP0);
+					t->m_age = 10;
+					++i;
+				}
 			}
 			else
 			{
