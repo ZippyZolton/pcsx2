@@ -5853,13 +5853,13 @@ void GSDeviceVK::RenderHW(GSHWDrawConfig& config)
 		SendHWDraw(config, draw_rt, skip_first_barrier);
 
 	// blend second pass
-	if (config.blend_second_pass.enable)
+	if (config.blend_multi_pass.enable_pass2)
 	{
-		if (config.blend_second_pass.blend.constant_enable)
-			SetBlendConstants(config.blend_second_pass.blend.constant);
+		if (config.blend_multi_pass.blend_pass2.constant_enable)
+			SetBlendConstants(config.blend_multi_pass.blend_pass2.constant);
 
-		pipe.bs = config.blend_second_pass.blend;
-		pipe.ps.blend_hw = config.blend_second_pass.blend_hw;
+		pipe.bs = config.blend_multi_pass.blend_pass2;
+		pipe.ps.blend_hw = config.blend_multi_pass.blend_hw;
 		if (BindDrawPipeline(pipe))
 			DrawIndexedPrimitive();
 	}
