@@ -414,7 +414,7 @@
              <string extracomment="hz=Hertz, as in the measuring unit. Shown after the corresponding number. Those languages who'd need to remove the space or do something in between should do so."> hz</string>
             </property>
             <property name="singleStep">
-             <double>0.010000000000000</double>
+             <double>0.199000000000000</double>
             </property>
            </widget>
           </item>
@@ -424,7 +424,7 @@
              <string> hz</string>
             </property>
             <property name="singleStep">
-             <double>0.010000000000000</double>
+             <double>0.199000000000000</double>
             </property>
            </widget>
           </item>
