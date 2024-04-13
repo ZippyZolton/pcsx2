@@ -2628,9 +2628,16 @@ void GSDevice11::RenderHW(GSHWDrawConfig& config)
 	{
 		config.ps.blend_hw = config.blend_multi_pass.blend_hw;
 		SetupPS(config.ps, &config.cb_ps, config.sampler);
-		config.ps.blend_hw = 0;
 		SetupOM(config.depth, OMBlendSelector(config.colormask, config.blend_multi_pass.blend_pass2), config.blend_multi_pass.blend_pass2.constant);
 		DrawIndexedPrimitive();
+
+		if (config.blend_multi_pass.enable_pass3)
+		{
+			config.ps.blend_hw = 0;
+			SetupPS(config.ps, &config.cb_ps, config.sampler);
+			SetupOM(config.depth, OMBlendSelector(config.colormask, config.blend_multi_pass.blend_pass3), config.blend_multi_pass.blend_pass3.constant);
+			DrawIndexedPrimitive();
+		}
 	}
 
 	if (config.alpha_second_pass.enable)

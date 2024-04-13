@@ -4443,6 +4443,22 @@ void GSRendererHW::EmulateBlending(int rt_alpha_min, int rt_alpha_max, bool& DAT
 				m_conf.blend_multi_pass.blend_hw = 1;
 				m_conf.blend_multi_pass.blend_pass2 = {true, GSDevice::DST_COLOR, GSDevice::CONST_ONE, GSDevice::OP_ADD, GSDevice::CONST_ONE, GSDevice::CONST_ZERO, false, 0};
 			}
+			else if (alpha_c1_high_no_rta_correct && (blend_flag & BLEND_HW6))
+			{
+				// Alpha = Ad.
+				// Cs + Cd*Alpha or Cs - Cd*Ad
+				// Render pass 1: Do Cd*Aalpha on first pass.
+				blend.src = GSDevice::CONST_ZERO;
+				blend.dst = GSDevice::DST_ALPHA;
+				blend.op = GSDevice::OP_ADD;
+				// Render pass 2: Take result (Cd) from render pass 1 and double it.
+				m_conf.blend_multi_pass.enable_pass2 = true;
+				m_conf.blend_multi_pass.blend_hw = 1;
+				m_conf.blend_multi_pass.blend_pass2 = {true, GSDevice::DST_COLOR, GSDevice::CONST_ONE, GSDevice::OP_ADD, GSDevice::CONST_ZERO, GSDevice::CONST_ONE, false, 0};
+				// Render pass 3: Add or subtract result (Cd) from render pass 2 with Cs.
+				m_conf.blend_multi_pass.enable_pass3 = true;
+				m_conf.blend_multi_pass.blend_pass3 = {true, blend_multi_pass.src, GSDevice::CONST_ONE, blend_multi_pass.op, GSDevice::CONST_ONE, GSDevice::CONST_ZERO, false, 0};
+			}
 
 			if (m_conf.ps.blend_c == 2 && m_conf.blend_multi_pass.enable_pass2)
 				m_conf.cb_ps.TA_MaxDepth_Af.a = static_cast<float>(AFIX) / 128.0f;
